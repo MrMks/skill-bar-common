@@ -82,6 +82,11 @@ public class SPackage {
         }
 
         @Override
+        public ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix) {
+            return allocator.build(FIX_BAR).writeBoolean(fix);
+        }
+
+        @Override
         public ByteBuilder buildCast(ByteAllocator allocator, String key, boolean exist, boolean suc, byte code) {
             return allocator.build(CAST).writeCharSequence(key).writeBoolean(exist).writeBoolean(suc).write(code);
         }
@@ -177,6 +182,11 @@ public class SPackage {
                 map.put(index,key);
             }
             handler.onListBar(map);
+        }
+
+        @Override
+        public void decodeFixBar(IClientHandler handler, ByteDecoder decoder) {
+            handler.onFixBar(decoder.readBoolean());
         }
 
         @Override

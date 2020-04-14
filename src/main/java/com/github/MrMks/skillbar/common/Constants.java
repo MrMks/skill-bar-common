@@ -1,7 +1,7 @@
 package com.github.MrMks.skillbar.common;
 
 public class Constants {
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
 
     public static final String CHANNEL_NAME = "MCG_SkillBar";
     public static final byte DISCRIMINATOR = 0;
@@ -18,6 +18,7 @@ public class Constants {
     public static final byte ADD_SKILL = 8;
     public static final byte LIST_BAR = 9;
     public static final byte SAVE_BAR = 10;
+    public static final byte FIX_BAR = 15;
 
     public static final byte CAST = 11;
     public static final byte COOLDOWN = 12;

@@ -8,8 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public abstract class ByteBuilder {
+    private static final Charset utf8 = StandardCharsets.UTF_8;
+
     private ByteBuf buf = PooledByteBufAllocator.DEFAULT.heapBuffer(256);
-    private Charset utf8 = StandardCharsets.UTF_8;
     public ByteBuilder(byte header){
         buf.writeByte(header);
     }

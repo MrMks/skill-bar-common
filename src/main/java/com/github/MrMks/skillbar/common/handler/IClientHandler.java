@@ -19,6 +19,7 @@ public interface IClientHandler {
     void onEnforceUpdateSKill(int id, SkillInfo info);
     void onAddSkill(int activeId, int skillSize);
     void onListBar(Map<Integer, CharSequence> map);
+    void onFixBar(boolean fix);
 
     void onCast(CharSequence key, boolean exist, boolean suc, byte code);
     void onCoolDown(Map<CharSequence, Integer> map);
