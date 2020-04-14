@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'com.github.mrmks'
+version '4'
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set 'sources'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compileOnly 'io.netty:netty-all:4.1.9.Final'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'skillbar-common'
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
