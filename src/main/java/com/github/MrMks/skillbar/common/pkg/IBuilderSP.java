@@ -10,8 +10,8 @@ import java.util.Map;
 public interface IBuilderSP {
     ByteBuilder buildDiscover(ByteAllocator allocator, int version);
     ByteBuilder buildSetting(ByteAllocator allocator, int maxBarSize);
-    ByteBuilder buildEnable(ByteAllocator allocator, int active, int size);
-    ByteBuilder buildAccount(ByteAllocator allocator, int active, int size);
+    ByteBuilder buildAccount(ByteAllocator allocator, int active, boolean update, int size);
+    ByteBuilder buildEnable(ByteAllocator allocator);
     ByteBuilder buildCleanUp(ByteAllocator allocator, int active);
     ByteBuilder buildDisable(ByteAllocator allocator);
 
@@ -19,7 +19,7 @@ public interface IBuilderSP {
     ByteBuilder buildEnforceListSkill(ByteAllocator allocator, int active, List<SkillInfo> list);
     ByteBuilder buildUpdateSkill(ByteAllocator allocator, SkillInfo info);
     ByteBuilder buildEnforceUpdateSkill(ByteAllocator allocator, int active, SkillInfo info);
-    ByteBuilder buildAddSkill(ByteAllocator allocator, int active, int size);
+    ByteBuilder buildAddSkill(ByteAllocator allocator, List<SkillInfo> aList);
     ByteBuilder buildListBar(ByteAllocator allocator, Map<Integer, String> map);
     ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix);
 

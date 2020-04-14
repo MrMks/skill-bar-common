@@ -8,8 +8,8 @@ import java.util.Map;
 public interface IClientHandler {
     void onDiscover(int version);
     void onSetting(int maxSize);
-    void onEnable(int activeId, int skillSize);
-    void onAccount(int activeId, int skillSize);
+    void onAccount(int activeId, boolean update, int skillSize);
+    void onEnable();
     void onCleanUp(int activeId);
     void onDisable();
 
@@ -17,7 +17,7 @@ public interface IClientHandler {
     void onEnforceListSkill(int id, List<SkillInfo> list);
     void onUpdateSkill(SkillInfo info);
     void onEnforceUpdateSKill(int id, SkillInfo info);
-    void onAddSkill(int activeId, int skillSize);
+    void onAddSkill(List<SkillInfo> aList);
     void onListBar(Map<Integer, CharSequence> map);
     void onFixBar(boolean fix);
 

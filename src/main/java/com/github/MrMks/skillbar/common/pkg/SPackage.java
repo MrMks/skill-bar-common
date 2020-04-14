@@ -28,13 +28,13 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildEnable(ByteAllocator allocator, int active, int size) {
-            return allocator.build(ENABLE).writeInt(active).writeInt(size);
+        public ByteBuilder buildEnable(ByteAllocator allocator) {
+            return allocator.build(ENABLE);
         }
 
         @Override
-        public ByteBuilder buildAccount(ByteAllocator allocator, int active, int size) {
-            return allocator.build(ACCOUNT).writeInt(active).writeInt(size);
+        public ByteBuilder buildAccount(ByteAllocator allocator, int active, boolean update, int size) {
+            return allocator.build(ACCOUNT).writeInt(active).writeBoolean(update).writeInt(size);
         }
 
         @Override
@@ -68,8 +68,8 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildAddSkill(ByteAllocator allocator, int active, int size) {
-            return allocator.build(ADD_SKILL).writeInt(active).writeInt(size);
+        public ByteBuilder buildAddSkill(ByteAllocator allocator, List<SkillInfo> aList) {
+            return allocator.build(ADD_SKILL).writeSkillInfoList(aList);
         }
 
         @Override
@@ -116,16 +116,15 @@ public class SPackage {
 
         @Override
         public void decodeEnable(IClientHandler handler, ByteDecoder decoder) {
-            int activeId = decoder.readInt();
-            int size = decoder.readInt();
-            handler.onEnable(activeId,size);
+            handler.onEnable();
         }
 
         @Override
         public void decodeAccount(IClientHandler handler, ByteDecoder decoder) {
             int activeId = decoder.readInt();
+            boolean update = decoder.readBoolean();
             int size = decoder.readInt();
-            handler.onAccount(activeId,size);
+            handler.onAccount(activeId,update,size);
         }
 
         @Override
@@ -167,9 +166,7 @@ public class SPackage {
 
         @Override
         public void decodeAddSkill(IClientHandler handler, ByteDecoder decoder) {
-            int active = decoder.readInt();
-            int size = decoder.readInt();
-            handler.onAddSkill(active,size);
+            handler.onAddSkill(decoder.readSkillInfoList());
         }
 
         @Override
