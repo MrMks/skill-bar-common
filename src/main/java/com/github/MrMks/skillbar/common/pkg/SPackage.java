@@ -33,8 +33,8 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildAccount(ByteAllocator allocator, int active, boolean update, int size) {
-            return allocator.build(ACCOUNT).writeInt(active).writeBoolean(update).writeInt(size);
+        public ByteBuilder buildAccount(ByteAllocator allocator, int active, int size) {
+            return allocator.build(ACCOUNT).writeInt(active).writeInt(size);
         }
 
         @Override
@@ -122,9 +122,8 @@ public class SPackage {
         @Override
         public void decodeAccount(IClientHandler handler, ByteDecoder decoder) {
             int activeId = decoder.readInt();
-            boolean update = decoder.readBoolean();
             int size = decoder.readInt();
-            handler.onAccount(activeId,update,size);
+            handler.onAccount(activeId, size);
         }
 
         @Override

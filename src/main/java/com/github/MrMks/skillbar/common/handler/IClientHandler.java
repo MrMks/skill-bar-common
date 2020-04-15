@@ -8,7 +8,7 @@ import java.util.Map;
 public interface IClientHandler {
     void onDiscover(int version);
     void onSetting(int maxSize);
-    void onAccount(int activeId, boolean update, int skillSize);
+    void onAccount(int activeId, int skillSize);
     void onEnable();
     void onCleanUp(int activeId);
     void onDisable();
