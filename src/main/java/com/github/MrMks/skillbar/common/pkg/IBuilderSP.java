@@ -21,7 +21,8 @@ public interface IBuilderSP {
     ByteBuilder buildEnforceUpdateSkill(ByteAllocator allocator, int active, SkillInfo info);
     ByteBuilder buildAddSkill(ByteAllocator allocator, List<SkillInfo> aList);
     ByteBuilder buildListBar(ByteAllocator allocator, Map<Integer, String> map);
-    ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix);
+    @Deprecated ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix);
+    ByteBuilder buildRemoveBar(ByteAllocator allocator, List<Integer> list);
 
     ByteBuilder buildCast(ByteAllocator allocator, String key, boolean exist, boolean suc, byte code);
     ByteBuilder buildCoolDown(ByteAllocator allocator, Map<String, Integer> map);

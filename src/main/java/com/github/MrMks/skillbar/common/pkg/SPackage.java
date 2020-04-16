@@ -6,6 +6,7 @@ import com.github.MrMks.skillbar.common.ByteDecoder;
 import com.github.MrMks.skillbar.common.SkillInfo;
 import com.github.MrMks.skillbar.common.handler.IClientHandler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +83,16 @@ public class SPackage {
         }
 
         @Override
+        @Deprecated
         public ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix) {
             return allocator.build(FIX_BAR).writeBoolean(fix);
+        }
+
+        @Override
+        public ByteBuilder buildRemoveBar(ByteAllocator allocator, List<Integer> list) {
+            ByteBuilder builder = allocator.build(REMOVE_BAR).writeInt(list.size());
+            list.forEach(builder::writeInt);
+            return builder;
         }
 
         @Override
@@ -181,8 +190,17 @@ public class SPackage {
         }
 
         @Override
+        @Deprecated
         public void decodeFixBar(IClientHandler handler, ByteDecoder decoder) {
             handler.onFixBar(decoder.readBoolean());
+        }
+
+        @Override
+        public void decodeRemoveBar(IClientHandler handler, ByteDecoder decoder) {
+            int size = decoder.readInt();
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < size; i++) list.add(decoder.readInt());
+            handler.onRemoveBar(list);
         }
 
         @Override
