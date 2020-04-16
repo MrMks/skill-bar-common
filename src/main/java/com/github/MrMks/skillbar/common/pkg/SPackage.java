@@ -83,14 +83,13 @@ public class SPackage {
         }
 
         @Override
-        @Deprecated
         public ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix) {
             return allocator.build(FIX_BAR).writeBoolean(fix);
         }
 
         @Override
-        public ByteBuilder buildRemoveBar(ByteAllocator allocator, List<Integer> list) {
-            ByteBuilder builder = allocator.build(REMOVE_BAR).writeInt(list.size());
+        public ByteBuilder buildFreeSlots(ByteAllocator allocator, List<Integer> list) {
+            ByteBuilder builder = allocator.build(FREE_SLOTS).writeInt(list.size());
             list.forEach(builder::writeInt);
             return builder;
         }
@@ -190,17 +189,16 @@ public class SPackage {
         }
 
         @Override
-        @Deprecated
         public void decodeFixBar(IClientHandler handler, ByteDecoder decoder) {
             handler.onFixBar(decoder.readBoolean());
         }
 
         @Override
-        public void decodeRemoveBar(IClientHandler handler, ByteDecoder decoder) {
+        public void decodeFreeSlots(IClientHandler handler, ByteDecoder decoder) {
             int size = decoder.readInt();
             List<Integer> list = new ArrayList<>();
             for (int i = 0; i < size; i++) list.add(decoder.readInt());
-            handler.onRemoveBar(list);
+            handler.onFreeSlot(list);
         }
 
         @Override

@@ -19,7 +19,7 @@ public class Constants {
     public static final byte LIST_BAR = 9;
     public static final byte SAVE_BAR = 10;
     public static final byte FIX_BAR = 15;
-    public static final byte REMOVE_BAR = 16;
+    public static final byte FREE_SLOTS = 16;
 
     public static final byte CAST = 11;
     public static final byte COOLDOWN = 12;
