@@ -19,8 +19,10 @@ public interface IClientHandler {
     void onEnforceUpdateSKill(int id, SkillInfo info);
     void onAddSkill(List<SkillInfo> aList);
     void onListBar(Map<Integer, CharSequence> map);
-    void onFixBar(boolean fix);
-    void onFreeSlot(List<Integer> list);
+    void onEnterCondition(CharSequence key, int size, boolean fix, List<Integer> freeSlots);
+    void onLeaveCondition(CharSequence key);
+    @Deprecated void onFixBar(boolean fix);
+    @Deprecated void onFreeSlot(List<Integer> list);
 
     void onCast(CharSequence key, boolean exist, boolean suc, byte code);
     void onCoolDown(Map<CharSequence, Integer> map);

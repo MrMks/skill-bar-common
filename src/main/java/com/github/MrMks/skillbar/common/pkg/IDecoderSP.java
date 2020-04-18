@@ -17,8 +17,10 @@ public interface IDecoderSP {
     void decodeEnforceUpdateSkill(IClientHandler handler, ByteDecoder decoder);
     void decodeAddSkill(IClientHandler handler, ByteDecoder decoder);
     void decodeListBar(IClientHandler handler, ByteDecoder decoder);
-    void decodeFixBar(IClientHandler handler, ByteDecoder decoder);
-    void decodeFreeSlots(IClientHandler handler, ByteDecoder decoder);
+    void decodeEnterCondition(IClientHandler handler, ByteDecoder decoder);
+    void decodeLeaveCondition(IClientHandler handler, ByteDecoder decoder);
+    @Deprecated void decodeFixBar(IClientHandler handler, ByteDecoder decoder);
+    @Deprecated void decodeFreeSlots(IClientHandler handler, ByteDecoder decoder);
 
     void decodeCast(IClientHandler handler, ByteDecoder decoder);
     void decodeCoolDown(IClientHandler handler, ByteDecoder decoder);

@@ -21,6 +21,8 @@ public interface IBuilderSP {
     ByteBuilder buildEnforceUpdateSkill(ByteAllocator allocator, int active, SkillInfo info);
     ByteBuilder buildAddSkill(ByteAllocator allocator, List<SkillInfo> aList);
     ByteBuilder buildListBar(ByteAllocator allocator, Map<Integer, String> map);
+    ByteBuilder buildEnterCondition(ByteAllocator allocator, CharSequence key, int size, boolean fix, List<Integer> fList);
+    ByteBuilder buildLeaveCondition(ByteAllocator allocator, CharSequence key);
     ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix);
     ByteBuilder buildFreeSlots(ByteAllocator allocator, List<Integer> list);
 

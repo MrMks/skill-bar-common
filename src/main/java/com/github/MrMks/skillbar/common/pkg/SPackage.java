@@ -83,11 +83,25 @@ public class SPackage {
         }
 
         @Override
+        public ByteBuilder buildEnterCondition(ByteAllocator allocator, CharSequence key, int size, boolean fix, List<Integer> fList) {
+            ByteBuilder builder = allocator.build(ENTER_CONDITION).writeCharSequence(key).writeInt(size).writeBoolean(fix).writeInt(fList.size());
+            fList.forEach(builder::writeInt);
+            return builder;
+        }
+
+        @Override
+        public ByteBuilder buildLeaveCondition(ByteAllocator allocator, CharSequence key) {
+            return allocator.build(LEAVE_CONDITION).writeCharSequence(key);
+        }
+
+        @Override
+        @Deprecated
         public ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix) {
             return allocator.build(FIX_BAR).writeBoolean(fix);
         }
 
         @Override
+        @Deprecated
         public ByteBuilder buildFreeSlots(ByteAllocator allocator, List<Integer> list) {
             ByteBuilder builder = allocator.build(FREE_SLOTS).writeInt(list.size());
             list.forEach(builder::writeInt);
@@ -189,11 +203,30 @@ public class SPackage {
         }
 
         @Override
+        public void decodeEnterCondition(IClientHandler handler, ByteDecoder decoder) {
+            CharSequence key = decoder.readCharSequence();
+            int barSize = decoder.readInt();
+            boolean fix = decoder.readBoolean();
+            int size = decoder.readInt();
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < size; i++) list.add(decoder.readInt());
+            handler.onEnterCondition(key, barSize, fix, list);
+        }
+
+        @Override
+        public void decodeLeaveCondition(IClientHandler handler, ByteDecoder decoder) {
+            CharSequence key = decoder.readCharSequence();
+            handler.onLeaveCondition(key);
+        }
+
+        @Override
+        @Deprecated
         public void decodeFixBar(IClientHandler handler, ByteDecoder decoder) {
             handler.onFixBar(decoder.readBoolean());
         }
 
         @Override
+        @Deprecated
         public void decodeFreeSlots(IClientHandler handler, ByteDecoder decoder) {
             int size = decoder.readInt();
             List<Integer> list = new ArrayList<>();
