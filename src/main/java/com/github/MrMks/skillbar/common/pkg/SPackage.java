@@ -1,9 +1,6 @@
 package com.github.MrMks.skillbar.common.pkg;
 
-import com.github.MrMks.skillbar.common.ByteAllocator;
-import com.github.MrMks.skillbar.common.ByteBuilder;
-import com.github.MrMks.skillbar.common.ByteDecoder;
-import com.github.MrMks.skillbar.common.SkillInfo;
+import com.github.MrMks.skillbar.common.*;
 import com.github.MrMks.skillbar.common.handler.IClientHandler;
 
 import java.util.ArrayList;
@@ -19,8 +16,8 @@ public class SPackage {
     public static class Builder implements IBuilderSP {
         private Builder(){}
         @Override
-        public ByteBuilder buildDiscover(ByteAllocator allocator, int version) {
-            return allocator.build(DISCOVER).writeInt(version);
+        public ByteBuilder buildDiscover(ByteAllocator allocator) {
+            return allocator.build(DISCOVER).writeInt(VERSION);
         }
 
         @Override
@@ -49,7 +46,7 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildListSkill(ByteAllocator allocator, List<SkillInfo> aList, List<String> reList) {
+        public ByteBuilder buildListSkill(ByteAllocator allocator, List<SkillInfo> aList, List<? extends CharSequence> reList) {
             return allocator.build(LIST_SKILL).writeSkillInfoList(aList).writeCharSequenceList(reList);
         }
 
@@ -74,49 +71,41 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildListBar(ByteAllocator allocator, Map<Integer, String> map) {
+        public ByteBuilder buildListBar(ByteAllocator allocator, Map<Integer, ? extends CharSequence> map) {
             ByteBuilder builder = allocator.build(LIST_BAR).writeInt(map.size());
-            for (Map.Entry<Integer,String> entry : map.entrySet()) {
+            for (Map.Entry<Integer,? extends CharSequence> entry : map.entrySet()) {
                 builder.writeInt(entry.getKey()).writeCharSequence(entry.getValue());
             }
             return builder;
         }
 
         @Override
-        public ByteBuilder buildEnterCondition(ByteAllocator allocator, CharSequence key, int size, boolean fix, List<Integer> fList) {
-            ByteBuilder builder = allocator.build(ENTER_CONDITION).writeCharSequence(key).writeInt(size).writeBoolean(fix).writeInt(fList.size());
-            fList.forEach(builder::writeInt);
+        public ByteBuilder buildEnterCondition(ByteAllocator allocator, ICondition condition) {
+            ByteBuilder builder = allocator.build(ENTER_CONDITION)
+                    .writeInt(condition.getBarSize())
+                    .writeBoolean(condition.isEnableFix())
+                    .writeBoolean(condition.isEnableFree());
+            builder.writeInt(condition.getFixMap().size());
+            condition.getFixMap().forEach((k,v)->builder.writeInt(k).writeCharSequence(v));
+            builder.writeInt(condition.getFreeList().size());
+            condition.getFreeList().forEach(builder::writeInt);
             return builder;
         }
 
         @Override
-        public ByteBuilder buildLeaveCondition(ByteAllocator allocator, CharSequence key) {
-            return allocator.build(LEAVE_CONDITION).writeCharSequence(key);
+        public ByteBuilder buildLeaveCondition(ByteAllocator allocator) {
+            return allocator.build(LEAVE_CONDITION);
         }
 
         @Override
-        @Deprecated
-        public ByteBuilder buildFixBar(ByteAllocator allocator, boolean fix) {
-            return allocator.build(FIX_BAR).writeBoolean(fix);
-        }
-
-        @Override
-        @Deprecated
-        public ByteBuilder buildFreeSlots(ByteAllocator allocator, List<Integer> list) {
-            ByteBuilder builder = allocator.build(FREE_SLOTS).writeInt(list.size());
-            list.forEach(builder::writeInt);
-            return builder;
-        }
-
-        @Override
-        public ByteBuilder buildCast(ByteAllocator allocator, String key, boolean exist, boolean suc, byte code) {
+        public ByteBuilder buildCast(ByteAllocator allocator, CharSequence key, boolean exist, boolean suc, byte code) {
             return allocator.build(CAST).writeCharSequence(key).writeBoolean(exist).writeBoolean(suc).write(code);
         }
 
         @Override
-        public ByteBuilder buildCoolDown(ByteAllocator allocator, Map<String, Integer> map) {
+        public ByteBuilder buildCoolDown(ByteAllocator allocator, Map<? extends CharSequence, Integer> map) {
             ByteBuilder builder = allocator.build(COOLDOWN).writeInt(map.size());
-            for (Map.Entry<String,Integer> entry : map.entrySet()){
+            for (Map.Entry<? extends CharSequence,Integer> entry : map.entrySet()){
                 builder.writeCharSequence(entry.getKey()).writeInt(entry.getValue());
             }
             return builder;
@@ -127,7 +116,7 @@ public class SPackage {
         @Override
         public void decodeDiscover(IClientHandler handler, ByteDecoder decoder) {
             int version = decoder.readInt();
-            handler.onDiscover(version);
+            if (version == VERSION) handler.onDiscover(version);
         }
 
         @Override
@@ -161,7 +150,7 @@ public class SPackage {
         @Override
         public void decodeListSkill(IClientHandler handler, ByteDecoder decoder) {
             List<SkillInfo> aList = decoder.readSkillInfoList();
-            List<CharSequence> reList = decoder.readCharSequenceList();
+            List<String> reList = decoder.readCharSequenceList();
             handler.onListSkill(aList, reList);
         }
 
@@ -193,10 +182,10 @@ public class SPackage {
         @Override
         public void decodeListBar(IClientHandler handler, ByteDecoder decoder) {
             int size = decoder.readInt();
-            Map<Integer, CharSequence> map = new HashMap<>();
+            Map<Integer, String> map = new HashMap<>();
             for (int i = 0; i < size ; i++){
                 int index = decoder.readInt();
-                CharSequence key = decoder.readCharSequence();
+                String key = decoder.readCharSequence();
                 map.put(index,key);
             }
             handler.onListBar(map);
@@ -204,39 +193,26 @@ public class SPackage {
 
         @Override
         public void decodeEnterCondition(IClientHandler handler, ByteDecoder decoder) {
-            CharSequence key = decoder.readCharSequence();
-            int barSize = decoder.readInt();
-            boolean fix = decoder.readBoolean();
             int size = decoder.readInt();
+            boolean fix = decoder.readBoolean();
+            boolean free = decoder.readBoolean();
+            int mapSize = decoder.readInt();
+            Map<Integer, String> fixMap = new HashMap<>();
+            for (int i = 0; i < mapSize; i++) fixMap.put(decoder.readInt(), decoder.readCharSequence());
+            int listSize = decoder.readInt();
             List<Integer> list = new ArrayList<>();
-            for (int i = 0; i < size; i++) list.add(decoder.readInt());
-            handler.onEnterCondition(key, barSize, fix, list);
+            for (int i = 0; i < listSize; i++) list.add(decoder.readInt());
+            handler.onEnterCondition(size, fix, free, fixMap, list);
         }
 
         @Override
         public void decodeLeaveCondition(IClientHandler handler, ByteDecoder decoder) {
-            CharSequence key = decoder.readCharSequence();
-            handler.onLeaveCondition(key);
-        }
-
-        @Override
-        @Deprecated
-        public void decodeFixBar(IClientHandler handler, ByteDecoder decoder) {
-            handler.onFixBar(decoder.readBoolean());
-        }
-
-        @Override
-        @Deprecated
-        public void decodeFreeSlots(IClientHandler handler, ByteDecoder decoder) {
-            int size = decoder.readInt();
-            List<Integer> list = new ArrayList<>();
-            for (int i = 0; i < size; i++) list.add(decoder.readInt());
-            handler.onFreeSlot(list);
+            handler.onLeaveCondition();
         }
 
         @Override
         public void decodeCast(IClientHandler handler, ByteDecoder decoder) {
-            CharSequence key = decoder.readCharSequence();
+            String key = decoder.readCharSequence();
             boolean exist = decoder.readBoolean();
             boolean suc = decoder.readBoolean();
             byte code = decoder.read();
@@ -246,9 +222,9 @@ public class SPackage {
         @Override
         public void decodeCoolDown(IClientHandler handler, ByteDecoder decoder) {
             int size = decoder.readInt();
-            Map<CharSequence, Integer> map = new HashMap<>();
+            Map<String, Integer> map = new HashMap<>();
             for (int i = 0; i < size; i++){
-                CharSequence key = decoder.readCharSequence();
+                String key = decoder.readCharSequence();
                 int cd = decoder.readInt();
                 map.put(key,cd);
             }

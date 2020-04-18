@@ -47,12 +47,12 @@ public class ByteDecoder {
         return buf.readBoolean();
     }
 
-    public CharSequence readCharSequence() throws IndexOutOfBoundsException{
-        return buf.readCharSequence(readInt(),utf8);
+    public String readCharSequence() throws IndexOutOfBoundsException{
+        return buf.readCharSequence(readInt(),utf8).toString();
     }
 
-    public List<CharSequence> readCharSequenceList() throws IndexOutOfBoundsException{
-        List<CharSequence> list = new ArrayList<>();
+    public List<String> readCharSequenceList() throws IndexOutOfBoundsException{
+        List<String> list = new ArrayList<>();
         int size = readInt();
         for (int i = 0; i < size; i++){
             list.add(readCharSequence());
@@ -61,14 +61,14 @@ public class ByteDecoder {
     }
 
     public SkillInfo readSkillInfo() throws IndexOutOfBoundsException{
-        String key = readCharSequence().toString();
+        String key = readCharSequence();
         boolean exist = readBoolean();
         boolean isUnlock = readBoolean();
         boolean canCast = readBoolean();
         int itemId = readInt();
         short damage = readShort();
-        String display = readCharSequence().toString();
-        List<CharSequence> lore = readCharSequenceList();
+        String display = readCharSequence();
+        List<String> lore = readCharSequenceList();
         return new SkillInfo(key,exist,isUnlock,canCast,itemId,damage,display,lore);
     }
 

@@ -22,12 +22,12 @@ public class CPackage {
         }
 
         @Override
-        public ByteBuilder buildListSkill(ByteAllocator allocator, List<String> list) {
+        public ByteBuilder buildListSkill(ByteAllocator allocator, List<? extends CharSequence> list) {
             return allocator.build(LIST_SKILL).writeCharSequenceList(list);
         }
 
         @Override
-        public ByteBuilder buildUpdateSkill(ByteAllocator allocator, String key) {
+        public ByteBuilder buildUpdateSkill(ByteAllocator allocator, CharSequence key) {
             return allocator.build(UPDATE_SKILL).writeCharSequence(key);
         }
 
@@ -37,16 +37,16 @@ public class CPackage {
         }
 
         @Override
-        public ByteBuilder buildSaveBar(ByteAllocator allocator, Map<Integer, String> map) {
+        public ByteBuilder buildSaveBar(ByteAllocator allocator, Map<Integer, ? extends CharSequence> map) {
             ByteBuilder builder = allocator.build(SAVE_BAR).writeInt(map.size());
-            for (Map.Entry<Integer, String> entry : map.entrySet()){
+            for (Map.Entry<Integer, ? extends CharSequence> entry : map.entrySet()){
                 builder.writeInt(entry.getKey()).writeCharSequence(entry.getValue());
             }
             return builder;
         }
 
         @Override
-        public ByteBuilder buildCast(ByteAllocator allocator, String key) {
+        public ByteBuilder buildCast(ByteAllocator allocator, CharSequence key) {
             return allocator.build(CAST).writeCharSequence(key);
         }
     }
@@ -75,10 +75,10 @@ public class CPackage {
         @Override
         public void decodeSaveBar(IServerHandler handler, ByteDecoder decoder) {
             int size = decoder.readInt();
-            Map<Integer, CharSequence> map = new HashMap<>();
+            Map<Integer, String> map = new HashMap<>();
             for (int i = 0; i < size; i++){
                 int index = decoder.readInt();
-                CharSequence key = decoder.readCharSequence();
+                String key = decoder.readCharSequence();
                 map.put(index,key);
             }
             handler.onSaveBar(map);

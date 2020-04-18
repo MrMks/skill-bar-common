@@ -6,10 +6,10 @@ import java.util.Map;
 public interface IServerHandler {
     void onDiscover();
 
-    void onListSkill(List<CharSequence> keys);
-    void onUpdateSkill(CharSequence key);
+    void onListSkill(List<String> keys);
+    void onUpdateSkill(String key);
     void onListBar();
-    void onSaveBar(Map<Integer, CharSequence> map);
+    void onSaveBar(Map<Integer, String> map);
 
-    void onCast(CharSequence key);
+    void onCast(String key);
 }
