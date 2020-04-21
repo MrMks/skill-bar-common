@@ -11,19 +11,21 @@ import java.util.List;
 public class ByteDecoder {
     private Charset utf8 = StandardCharsets.UTF_8;
     private ByteBuf buf;
-    private byte header;
+    private EnumHeader header;
     public ByteDecoder(byte[] bytes) throws IndexOutOfBoundsException{
         buf = PooledByteBufAllocator.DEFAULT.buffer(bytes.length - 1);
         buf.writeBytes(bytes,1,bytes.length - 1);
-        header = buf.readByte();
+        byte i = buf.readByte();
+        header = (i >= 0 && i < EnumHeader.values().length) ? EnumHeader.values()[i] : EnumHeader.Undefined;
     }
 
     public ByteDecoder(ByteBuf buf){
         this.buf = buf;
-        header = buf.readByte();
+        byte i = buf.readByte();
+        header = (i >= 0 && i < EnumHeader.values().length) ? EnumHeader.values()[i] : EnumHeader.Undefined;
     }
 
-    public byte getHeader(){
+    public EnumHeader getHeader(){
         return header;
     }
 

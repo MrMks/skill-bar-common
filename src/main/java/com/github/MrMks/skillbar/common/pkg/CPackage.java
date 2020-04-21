@@ -3,42 +3,53 @@ package com.github.MrMks.skillbar.common.pkg;
 import com.github.MrMks.skillbar.common.ByteAllocator;
 import com.github.MrMks.skillbar.common.ByteBuilder;
 import com.github.MrMks.skillbar.common.ByteDecoder;
+import com.github.MrMks.skillbar.common.EnumHeader;
 import com.github.MrMks.skillbar.common.handler.IServerHandler;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.MrMks.skillbar.common.Constants.*;
-
 public class CPackage {
     public static Builder BUILDER = new Builder();
     public static Decoder DECODER = new Decoder();
     public static class Builder implements IBuilderCP {
         private Builder(){}
+        private ByteAllocator allocator;
+
         @Override
-        public ByteBuilder buildDiscover(ByteAllocator allocator) {
-            return allocator.build(DISCOVER);
+        public void init(ByteAllocator allocator) {
+            this.allocator = allocator;
         }
 
         @Override
-        public ByteBuilder buildListSkill(ByteAllocator allocator, List<? extends CharSequence> list) {
-            return allocator.build(LIST_SKILL).writeCharSequenceList(list);
+        public boolean isInitialized() {
+            return this.allocator != null;
         }
 
         @Override
-        public ByteBuilder buildUpdateSkill(ByteAllocator allocator, CharSequence key) {
-            return allocator.build(UPDATE_SKILL).writeCharSequence(key);
+        public ByteBuilder buildDiscover() {
+            return allocator.build(EnumHeader.Discover.byteOrder());
         }
 
         @Override
-        public ByteBuilder buildListBar(ByteAllocator allocator) {
-            return allocator.build(LIST_BAR);
+        public ByteBuilder buildListSkill(List<? extends CharSequence> list) {
+            return allocator.build(EnumHeader.ListSkill.byteOrder()).writeCharSequenceList(list);
         }
 
         @Override
-        public ByteBuilder buildSaveBar(ByteAllocator allocator, Map<Integer, ? extends CharSequence> map) {
-            ByteBuilder builder = allocator.build(SAVE_BAR).writeInt(map.size());
+        public ByteBuilder buildUpdateSkill(CharSequence key) {
+            return allocator.build(EnumHeader.UpdateSkill.byteOrder()).writeCharSequence(key);
+        }
+
+        @Override
+        public ByteBuilder buildListBar() {
+            return allocator.build(EnumHeader.ListBar.byteOrder());
+        }
+
+        @Override
+        public ByteBuilder buildSaveBar(Map<Integer, ? extends CharSequence> map) {
+            ByteBuilder builder = allocator.build(EnumHeader.SaveBar.byteOrder()).writeInt(map.size());
             for (Map.Entry<Integer, ? extends CharSequence> entry : map.entrySet()){
                 builder.writeInt(entry.getKey()).writeCharSequence(entry.getValue());
             }
@@ -46,13 +57,12 @@ public class CPackage {
         }
 
         @Override
-        public ByteBuilder buildCast(ByteAllocator allocator, CharSequence key) {
-            return allocator.build(CAST).writeCharSequence(key);
+        public ByteBuilder buildCast(CharSequence key) {
+            return allocator.build(EnumHeader.Cast.byteOrder()).writeCharSequence(key);
         }
     }
     public static class Decoder implements IDecoderCP {
         private Decoder(){}
-        @Override
         public void decodeDiscover(IServerHandler handler, ByteDecoder decoder) {
             handler.onDiscover();
         }

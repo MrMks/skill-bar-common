@@ -15,64 +15,70 @@ public class SPackage {
     public static Decoder DECODER = new Decoder();
     public static class Builder implements IBuilderSP {
         private Builder(){}
+        private ByteAllocator allocator = null;
         @Override
-        public ByteBuilder buildDiscover(ByteAllocator allocator) {
-            return allocator.build(DISCOVER).writeInt(VERSION);
+        public void init(ByteAllocator allocator) {
+            this.allocator = allocator;
         }
 
         @Override
-        public ByteBuilder buildSetting(ByteAllocator allocator, int maxBarSize) {
-            return allocator.build(SETTING).writeInt(maxBarSize);
+        public boolean isInitialized() {
+            return allocator != null;
         }
 
         @Override
-        public ByteBuilder buildEnable(ByteAllocator allocator) {
-            return allocator.build(ENABLE);
+        public ByteBuilder buildDiscover() {
+            return allocator.build(EnumHeader.Discover.byteOrder()).writeInt(VERSION);
         }
 
         @Override
-        public ByteBuilder buildAccount(ByteAllocator allocator, int active, int size) {
-            return allocator.build(ACCOUNT).writeInt(active).writeInt(size);
+        public ByteBuilder buildSetting(int maxBarSize) {
+            return allocator.build(EnumHeader.Setting.byteOrder()).writeInt(maxBarSize);
         }
 
         @Override
-        public ByteBuilder buildCleanUp(ByteAllocator allocator, int active) {
-            return allocator.build(CLEAN).writeInt(active);
+        public ByteBuilder buildEnable() {
+            return allocator.build(EnumHeader.Enable.byteOrder());
         }
 
         @Override
-        public ByteBuilder buildDisable(ByteAllocator allocator) {
-            return allocator.build(DISABLE);
+        public ByteBuilder buildAccount(int active, int size) {
+            return allocator.build(EnumHeader.Account.byteOrder()).writeInt(active).writeInt(size);
         }
 
         @Override
-        public ByteBuilder buildListSkill(ByteAllocator allocator, List<SkillInfo> aList, List<? extends CharSequence> reList) {
-            return allocator.build(LIST_SKILL).writeSkillInfoList(aList).writeCharSequenceList(reList);
+        public ByteBuilder buildCleanUp(int active) {
+            return allocator.build(EnumHeader.Clean.byteOrder()).writeInt(active);
         }
 
         @Override
-        public ByteBuilder buildEnforceListSkill(ByteAllocator allocator, int active, List<SkillInfo> list) {
-            return allocator.build(ENFORCE_LIST_SKILL).writeInt(active).writeSkillInfoList(list);
+        public ByteBuilder buildDisable() {
+            return allocator.build(EnumHeader.Disable.byteOrder());
         }
 
         @Override
-        public ByteBuilder buildUpdateSkill(ByteAllocator allocator, SkillInfo info) {
-            return allocator.build(UPDATE_SKILL).writeSkillInfo(info);
+        public ByteBuilder buildListSkill(List<SkillInfo> list) {
+            return allocator.build(EnumHeader.ListSkill.byteOrder()).writeSkillInfoList(list);
         }
 
         @Override
-        public ByteBuilder buildEnforceUpdateSkill(ByteAllocator allocator, int active, SkillInfo info) {
-            return allocator.build(ENFORCE_UPDATE_SKILL).writeInt(active).writeSkillInfo(info);
+        public ByteBuilder buildAddSkill(List<SkillInfo> list) {
+            return allocator.build(EnumHeader.AddSkill.byteOrder()).writeSkillInfoList(list);
         }
 
         @Override
-        public ByteBuilder buildAddSkill(ByteAllocator allocator, List<SkillInfo> aList) {
-            return allocator.build(ADD_SKILL).writeSkillInfoList(aList);
+        public ByteBuilder buildRemoveSkill(List<String> list) {
+            return allocator.build(EnumHeader.RemoveSkill.byteOrder()).writeCharSequenceList(list);
         }
 
         @Override
-        public ByteBuilder buildListBar(ByteAllocator allocator, Map<Integer, ? extends CharSequence> map) {
-            ByteBuilder builder = allocator.build(LIST_BAR).writeInt(map.size());
+        public ByteBuilder buildUpdateSkill(SkillInfo info) {
+            return allocator.build(EnumHeader.UpdateSkill.byteOrder()).writeSkillInfo(info);
+        }
+
+        @Override
+        public ByteBuilder buildListBar(Map<Integer, ? extends CharSequence> map) {
+            ByteBuilder builder = allocator.build(EnumHeader.ListBar.byteOrder()).writeInt(map.size());
             for (Map.Entry<Integer,? extends CharSequence> entry : map.entrySet()) {
                 builder.writeInt(entry.getKey()).writeCharSequence(entry.getValue());
             }
@@ -80,8 +86,8 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildEnterCondition(ByteAllocator allocator, ICondition condition) {
-            ByteBuilder builder = allocator.build(ENTER_CONDITION)
+        public ByteBuilder buildEnterCondition(ICondition condition) {
+            ByteBuilder builder = allocator.build(EnumHeader.EnterCondition.byteOrder())
                     .writeInt(condition.getBarSize())
                     .writeBoolean(condition.isEnableFix())
                     .writeBoolean(condition.isEnableFree());
@@ -93,18 +99,18 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildLeaveCondition(ByteAllocator allocator) {
-            return allocator.build(LEAVE_CONDITION);
+        public ByteBuilder buildLeaveCondition() {
+            return allocator.build(EnumHeader.LeaveCondition.byteOrder());
         }
 
         @Override
-        public ByteBuilder buildCast(ByteAllocator allocator, CharSequence key, boolean exist, boolean suc, byte code) {
-            return allocator.build(CAST).writeCharSequence(key).writeBoolean(exist).writeBoolean(suc).write(code);
+        public ByteBuilder buildCast(CharSequence key, boolean exist, boolean suc, byte code) {
+            return allocator.build(EnumHeader.Cast.byteOrder()).writeCharSequence(key).writeBoolean(exist).writeBoolean(suc).write(code);
         }
 
         @Override
-        public ByteBuilder buildCoolDown(ByteAllocator allocator, Map<? extends CharSequence, Integer> map) {
-            ByteBuilder builder = allocator.build(COOLDOWN).writeInt(map.size());
+        public ByteBuilder buildCoolDown(Map<? extends CharSequence, Integer> map) {
+            ByteBuilder builder = allocator.build(EnumHeader.CoolDown.byteOrder()).writeInt(map.size());
             for (Map.Entry<? extends CharSequence,Integer> entry : map.entrySet()){
                 builder.writeCharSequence(entry.getKey()).writeInt(entry.getValue());
             }
@@ -150,33 +156,23 @@ public class SPackage {
         @Override
         public void decodeListSkill(IClientHandler handler, ByteDecoder decoder) {
             List<SkillInfo> aList = decoder.readSkillInfoList();
-            List<String> reList = decoder.readCharSequenceList();
-            handler.onListSkill(aList, reList);
+            handler.onListSkill(aList);
         }
 
         @Override
-        public void decodeEnforceListSkill(IClientHandler handler, ByteDecoder decoder) {
-            int active = decoder.readInt();
-            List<SkillInfo> list = decoder.readSkillInfoList();
-            handler.onEnforceListSkill(active, list);
+        public void decodeAddSkill(IClientHandler handler, ByteDecoder decoder) {
+            handler.onAddSkill(decoder.readSkillInfoList());
+        }
+
+        @Override
+        public void decodeRemoveSkill(IClientHandler handler, ByteDecoder decoder) {
+            handler.onRemoveSkill(decoder.readCharSequenceList());
         }
 
         @Override
         public void decodeUpdateSkill(IClientHandler handler, ByteDecoder decoder) {
             SkillInfo info = decoder.readSkillInfo();
             handler.onUpdateSkill(info);
-        }
-
-        @Override
-        public void decodeEnforceUpdateSkill(IClientHandler handler, ByteDecoder decoder) {
-            int active = decoder.readInt();
-            SkillInfo info = decoder.readSkillInfo();
-            handler.onEnforceUpdateSKill(active, info);
-        }
-
-        @Override
-        public void decodeAddSkill(IClientHandler handler, ByteDecoder decoder) {
-            handler.onAddSkill(decoder.readSkillInfoList());
         }
 
         @Override
