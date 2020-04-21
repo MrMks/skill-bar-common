@@ -22,6 +22,6 @@ public interface IClientHandler {
     void onEnterCondition(int size, boolean fix, boolean free, Map<Integer, String> fixMap, List<Integer> freeList);
     void onLeaveCondition();
 
-    void onCast(String key, boolean exist, boolean suc, byte code);
+    void onCast(String key, boolean exist, boolean suc);
     void onCoolDown(Map<String, Integer> map);
 }

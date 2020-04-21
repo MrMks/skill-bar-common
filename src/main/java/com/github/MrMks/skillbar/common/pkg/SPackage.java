@@ -104,8 +104,8 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildCast(CharSequence key, boolean exist, boolean suc, byte code) {
-            return allocator.build(EnumHeader.Cast.byteOrder()).writeCharSequence(key).writeBoolean(exist).writeBoolean(suc).write(code);
+        public ByteBuilder buildCast(CharSequence key, boolean exist, boolean suc) {
+            return allocator.build(EnumHeader.Cast.byteOrder()).writeCharSequence(key).writeBoolean(exist).writeBoolean(suc);
         }
 
         @Override
@@ -211,8 +211,7 @@ public class SPackage {
             String key = decoder.readCharSequence();
             boolean exist = decoder.readBoolean();
             boolean suc = decoder.readBoolean();
-            byte code = decoder.read();
-            handler.onCast(key,exist,suc,code);
+            handler.onCast(key,exist,suc);
         }
 
         @Override

@@ -23,6 +23,6 @@ public interface IBuilderSP extends IBuilder{
     ByteBuilder buildEnterCondition(ICondition condition);
     ByteBuilder buildLeaveCondition();
 
-    ByteBuilder buildCast(CharSequence key, boolean exist, boolean suc, byte code);
+    ByteBuilder buildCast(CharSequence key, boolean exist, boolean suc);
     ByteBuilder buildCoolDown(Map<? extends CharSequence, Integer> map);
 }
