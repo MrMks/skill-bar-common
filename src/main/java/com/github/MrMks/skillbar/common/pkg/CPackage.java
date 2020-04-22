@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CPackage {
-    public static Builder BUILDER = new Builder();
-    public static Decoder DECODER = new Decoder();
+    public static final Builder BUILDER = new Builder();
+    public static final Decoder DECODER = new Decoder();
     public static class Builder implements IBuilderCP {
         private Builder(){}
         private ByteAllocator allocator;

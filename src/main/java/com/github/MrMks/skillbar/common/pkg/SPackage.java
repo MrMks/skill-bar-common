@@ -11,8 +11,8 @@ import java.util.Map;
 import static com.github.MrMks.skillbar.common.Constants.*;
 
 public class SPackage {
-    public static Builder BUILDER = new Builder();
-    public static Decoder DECODER = new Decoder();
+    public static final Builder BUILDER = new Builder();
+    public static final Decoder DECODER = new Decoder();
     public static class Builder implements IBuilderSP {
         private Builder(){}
         private ByteAllocator allocator = null;
