@@ -42,8 +42,8 @@ public class SPackage {
         }
 
         @Override
-        public ByteBuilder buildAccount(int active, int size) {
-            return allocator.build(EnumHeader.Account.byteOrder()).writeInt(active).writeInt(size);
+        public ByteBuilder buildAccount(int active) {
+            return allocator.build(EnumHeader.Account.byteOrder()).writeInt(active);
         }
 
         @Override
@@ -139,8 +139,7 @@ public class SPackage {
         @Override
         public void decodeAccount(IClientHandler handler, ByteDecoder decoder) {
             int activeId = decoder.readInt();
-            int size = decoder.readInt();
-            handler.onAccount(activeId, size);
+            handler.onAccount(activeId);
         }
 
         @Override

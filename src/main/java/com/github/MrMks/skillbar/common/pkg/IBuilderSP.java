@@ -10,7 +10,7 @@ import java.util.Map;
 public interface IBuilderSP extends IBuilder{
     ByteBuilder buildDiscover();
     ByteBuilder buildSetting(int maxBarSize);
-    ByteBuilder buildAccount(int active, int size);
+    ByteBuilder buildAccount(int active);
     ByteBuilder buildCleanUp(int active);
     ByteBuilder buildEnable();
     ByteBuilder buildDisable();

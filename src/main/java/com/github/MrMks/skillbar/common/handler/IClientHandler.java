@@ -9,7 +9,7 @@ public interface IClientHandler {
     void onDiscover(int version);
     void onSetting(int maxSize);
 
-    void onAccount(int activeId, int skillSize);
+    void onAccount(int activeId);
     void onCleanUp(int activeId);
     void onEnable();
     void onDisable();
