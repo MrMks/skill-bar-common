@@ -1,7 +1,7 @@
 package com.github.MrMks.skillbar.common;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class ByteBuilder {
     private static final Charset utf8 = StandardCharsets.UTF_8;
 
-    private ByteBuf buf = PooledByteBufAllocator.DEFAULT.heapBuffer(256);
+    private ByteBuf buf = Unpooled.buffer();
     public ByteBuilder(byte header){
         buf.writeByte(header);
     }
@@ -99,6 +99,4 @@ public abstract class ByteBuilder {
     protected ByteBuf getBuf(){
         return buf;
     }
-
-
 }
